@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { api, Meeting, Idea, Task } from '@/lib/api';
 import Link from 'next/link';
 
@@ -10,98 +10,11 @@ export default function DashboardPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 동기화 상태
-  const [syncStatus, setSyncStatus] = useState<string | null>(null);
-  const [syncing, setSyncing] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const reloadData = () => {
-    setLoading(true);
+  useEffect(() => {
     Promise.all([api.meetings.list(), api.ideas.list(), api.tasks.list()])
       .then(([m, i, t]) => { setMeetings(m); setIdeas(i); setTasks(t); })
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => { reloadData(); }, []);
-
-  // 로컬 JSON → 서버 업로드
-  const handleUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-    setSyncing(true);
-    setSyncStatus('업로드 중...');
-
-    try {
-      const payload: Record<string, unknown[]> = {};
-
-      for (const file of Array.from(files)) {
-        const text = await file.text();
-        const json = JSON.parse(text);
-
-        // { "meetings": [...] } 형태 또는 [...] 형태 모두 지원
-        const name = file.name.replace('.json', '') as string;
-        if (json[name]) {
-          payload[name] = json[name];
-        } else if (Array.isArray(json)) {
-          payload[name] = json;
-        }
-      }
-
-      const res = await fetch('/api/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      const summary = Object.entries(data.results || {})
-        .map(([k, v]) => `${k}: ${v}건`)
-        .join(', ');
-      setSyncStatus(`✅ 업로드 완료! ${summary}`);
-      reloadData();
-    } catch (e) {
-      setSyncStatus(`❌ 업로드 실패: ${(e as Error).message}`);
-    } finally {
-      setSyncing(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
-
-  // 서버 → JSON 다운로드
-  const handleDownload = async () => {
-    setSyncing(true);
-    setSyncStatus('다운로드 중...');
-
-    try {
-      const res = await fetch('/api/sync');
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      // 각 컬렉션별로 JSON 파일 다운로드
-      for (const [collection, items] of Object.entries(data)) {
-        const blob = new Blob(
-          [JSON.stringify({ [collection]: items }, null, 2)],
-          { type: 'application/json' }
-        );
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${collection}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-
-      const summary = Object.entries(data)
-        .map(([k, v]) => `${k}: ${(v as unknown[]).length}건`)
-        .join(', ');
-      setSyncStatus(`✅ 다운로드 완료! ${summary}`);
-    } catch (e) {
-      setSyncStatus(`❌ 다운로드 실패: ${(e as Error).message}`);
-    } finally {
-      setSyncing(false);
-    }
-  };
+  }, []);
 
   if (loading) return <div className="flex-1 flex items-center justify-center text-text-muted">로딩 중...</div>;
 
@@ -187,51 +100,6 @@ export default function DashboardPage() {
               ))}
             </div>
           </div>
-        </div>
-
-        {/* 동기화 패널 */}
-        <div className="mt-6 bg-bg-card border border-border rounded-2xl p-6">
-          <h2 className="text-base font-semibold mb-4">🔄 데이터 동기화</h2>
-          <p className="text-sm text-text-muted mb-4">로컬 JSON 파일과 서버 DB 간 데이터를 동기화합니다.</p>
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            {/* 로컬 → 서버 */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              multiple
-              className="hidden"
-              onChange={(e) => handleUpload(e.target.files)}
-            />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={syncing}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-accent text-white font-medium text-sm hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              📤 로컬 → 서버 업로드
-            </button>
-
-            {/* 서버 → 로컬 */}
-            <button
-              onClick={handleDownload}
-              disabled={syncing}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-bg-hover text-text-secondary font-medium text-sm hover:bg-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              📥 서버 → 로컬 다운로드
-            </button>
-          </div>
-
-          {/* 상태 메시지 */}
-          {syncStatus && (
-            <div className={`mt-3 text-sm px-4 py-2.5 rounded-lg ${
-              syncStatus.startsWith('✅') ? 'bg-emerald-500/10 text-emerald-400' :
-              syncStatus.startsWith('❌') ? 'bg-rose-500/10 text-rose-400' :
-              'bg-accent/10 text-accent'
-            }`}>
-              {syncStatus}
-            </div>
-          )}
         </div>
       </div>
     </>
