@@ -1,0 +1,31 @@
+??Next.js 16.2.1 (Turbopack)
+
+  Creating an optimized production build ...
+??Compiled successfully in 1866ms
+  Running TypeScript ...
+  Finished TypeScript in 1223ms ...
+  Collecting page data using 14 workers ...
+  Generating static pages using 14 workers (0/10) ...
+  Generating static pages using 14 workers (2/10) 
+  Generating static pages using 14 workers (4/10) 
+  Generating static pages using 14 workers (7/10) 
+??Generating static pages using 14 workers (10/10) in 355ms
+  Finalizing page optimization ...
+
+Route (app)
+????/
+????/_not-found
+??? /api/ideas
+??? /api/ideas/[id]
+??? /api/meetings
+??? /api/meetings/[id]
+??? /api/tasks
+??? /api/tasks/[id]
+????/ideas
+????/meetings
+????/tasks
+
+
+?? (Static)   prerendered as static content
+?  (Dynamic)  server-rendered on demand
+

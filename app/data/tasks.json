@@ -1,0 +1,49 @@
+{
+  "tasks": [
+    {
+      "id": "t1",
+      "title": "세계관 국가/종족 설정 문서화",
+      "description": "각 국가와 종족의 특성, 관계, 역사 등을 정리",
+      "status": "todo",
+      "priority": "high",
+      "assignee": null,
+      "sourceIdea": "i2",
+      "sourceMeeting": "m1",
+      "tags": [
+        "세계관"
+      ],
+      "createdAt": "2026-03-23T12:00:00+09:00",
+      "updatedAt": "2026-03-23T10:38:56.815Z"
+    },
+    {
+      "id": "t2",
+      "title": "게임 시스템 기본 설계",
+      "description": "전투 시스템, 세력 관리, 땅따먹기 메카닉 기본 설계 문서 작성",
+      "status": "todo",
+      "priority": "high",
+      "assignee": null,
+      "sourceIdea": "i1",
+      "sourceMeeting": "m1",
+      "tags": [
+        "게임시스템"
+      ],
+      "createdAt": "2026-03-23T12:00:00+09:00",
+      "updatedAt": "2026-03-23T10:41:35.428Z"
+    },
+    {
+      "id": "t3",
+      "title": "참고 게임 분석 정리",
+      "description": "전국란스, 삼국지 11, 유니콘 오버로드, 풍화설월 등 참고 게임들의 장단점 분석",
+      "status": "todo",
+      "priority": "medium",
+      "assignee": null,
+      "sourceIdea": null,
+      "sourceMeeting": "m1",
+      "tags": [
+        "리서치"
+      ],
+      "createdAt": "2026-03-23T12:00:00+09:00",
+      "updatedAt": "2026-03-23T12:00:00+09:00"
+    }
+  ]
+}
