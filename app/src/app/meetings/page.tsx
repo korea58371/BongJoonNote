@@ -17,11 +17,6 @@ export default function MeetingsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [form, setForm] = useState({ title: '', date: '', summary: '', keyPoints: '', decisions: '', tags: '', participants: '', rawLog: '' });
 
-  // 러프 메모
-  const [showRawDump, setShowRawDump] = useState(false);
-  const [rawDump, setRawDump] = useState('');
-  const [rawDumpSaving, setRawDumpSaving] = useState(false);
-
   // Edit mode
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({ title: '', date: '', summary: '', keyPoints: '', decisions: '', tags: '', participants: '', rawLog: '' });
@@ -80,24 +75,6 @@ export default function MeetingsPage() {
     setForm({ title: '', date: '', summary: '', keyPoints: '', decisions: '', tags: '', participants: '', rawLog: '' });
   };
 
-  const handleRawDump = async () => {
-    if (!rawDump.trim()) return;
-    setRawDumpSaving(true);
-    
-    // 이제 회의록이 아닌 수집함(raw_dumps)으로 보냅니다.
-    await api.rawDumps.create({
-      content: rawDump,
-      source: 'meetings',
-      author: currentUser || undefined,
-    });
-    
-    setRawDump('');
-    setShowRawDump(false);
-    setRawDumpSaving(false);
-    // 굳이 화면에 추가하지 않음 (수집함으로 이동했으므로)
-    alert('수집함에 저장되었습니다.');
-  };
-
   const handleDelete = async (id: string) => {
     await api.meetings.delete(id);
     setMeetings(meetings.filter(m => m.id !== id));
@@ -123,40 +100,11 @@ export default function MeetingsPage() {
             <p className="text-sm text-text-muted mt-1">팀 논의 내용을 정리합니다</p>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => setShowRawDump(!showRawDump)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              showRawDump ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-bg-elevated text-text-secondary border border-border-light hover:bg-bg-hover'
-            }`}>
-              📝 러프 메모
-            </button>
             <button onClick={() => setShowCreateModal(true)} className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]">
               + 새 회의록
             </button>
           </div>
         </div>
-
-        {/* 러프 메모 입력 영역 */}
-        {showRawDump && (
-          <div className="mt-4 p-4 bg-bg-card border border-amber-500/20 rounded-xl animate-slide-up">
-            <p className="text-xs text-amber-400 mb-2 font-medium">💡 카톡 대화, 메모 등을 그대로 붙여넣으세요. 나중에 AI로 정리할 수 있습니다.</p>
-            <textarea
-              value={rawDump}
-              onChange={(e) => setRawDump(e.target.value)}
-              className="w-full bg-bg-input border border-border rounded-lg p-3 text-sm text-text-primary placeholder-text-muted focus:border-amber-500/50 focus:outline-none resize-y min-h-[120px]"
-              placeholder="카톡 로그, 아이디어 메모, 통화 내용 등 아무거나 붙여넣기..."
-              autoFocus
-            />
-            <div className="flex justify-end gap-2 mt-2">
-              <button onClick={() => { setShowRawDump(false); setRawDump(''); }} className="px-3 py-1.5 text-xs text-text-muted hover:text-text-primary transition-colors">취소</button>
-              <button
-                onClick={handleRawDump}
-                disabled={!rawDump.trim() || rawDumpSaving}
-                className="px-4 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-medium hover:bg-amber-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {rawDumpSaving ? '저장 중...' : '📤 저장'}
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 lg:px-8 py-4 lg:py-6">
