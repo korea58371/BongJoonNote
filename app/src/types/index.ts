@@ -8,6 +8,7 @@ export interface Meeting {
   decisions: string[];
   rawLog: string;
   tags: string[];
+  author?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -21,6 +22,7 @@ export interface Idea {
   status: IdeaStatus;
   sourceMeeting: string | null;
   tags: string[];
+  author?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -47,5 +49,7 @@ export interface RawDump {
   id: string;
   content: string;
   source: string;
+  author?: string;
   createdAt: string;
+  updatedAt: string;
 }

@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import { UserProvider } from "@/lib/UserContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,8 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className={inter.className}>
-        <div className="flex h-screen">
-          <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <UserProvider>
+          <div className="flex h-screen">
+            <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
           <main className="flex-1 flex flex-col overflow-hidden min-w-0">
             {/* Mobile header bar */}
             <div className="lg:hidden flex items-center gap-3 px-4 py-3 border-b border-border bg-bg-surface">
@@ -33,7 +35,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
             {children}
           </main>
-        </div>
+          </div>
+        </UserProvider>
       </body>
     </html>
   );

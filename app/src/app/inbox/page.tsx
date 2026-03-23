@@ -5,8 +5,10 @@ import { api } from '@/lib/api';
 import type { RawDump } from '@/types';
 import { STYLES } from '@/constants';
 import ReactMarkdown from 'react-markdown';
+import { useUser } from '@/lib/UserContext';
 
 export default function InboxPage() {
+  const { currentUser } = useUser();
   const [dumps, setDumps] = useState<RawDump[]>([]);
   const [loading, setLoading] = useState(true);
   const [rawDump, setRawDump] = useState('');
@@ -25,14 +27,21 @@ export default function InboxPage() {
   const handleSave = async () => {
     if (!rawDump.trim()) return;
     setSaving(true);
-    const data = {
-      content: rawDump,
-      source: 'inbox',
-    };
-    const created = await api.rawDumps.create(data);
-    setDumps([created, ...dumps]);
-    setRawDump('');
-    setSaving(false);
+    try {
+      const data = {
+        content: rawDump,
+        source: 'inbox',
+        author: currentUser || undefined,
+      };
+      const created = await api.rawDumps.create(data);
+      setDumps([created, ...dumps]);
+      setRawDump('');
+    } catch (e: any) {
+      console.error('Failed to save raw dump:', e);
+      alert(`저장 실패: ${e.message}`);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -100,6 +109,11 @@ export default function InboxPage() {
                 <span className="text-xs text-text-muted">
                   {new Date(dump.createdAt).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 </span>
+                {dump.author && (
+                  <span className="text-[10px] text-accent font-bold bg-accent/10 rounded px-1.5 py-0.5">
+                    @{dump.author}
+                  </span>
+                )}
                 {dump.source && dump.source !== 'unknown' && (
                   <span className="text-[10px] text-text-muted border border-border rounded px-1.5 py-0.5">
                     from: {dump.source}

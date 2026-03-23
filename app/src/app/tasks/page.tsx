@@ -6,8 +6,10 @@ import type { Task } from '@/types';
 import type { Priority } from '@/types';
 import Modal from '@/components/Modal';
 import { TASK_COLUMNS, PRIORITY_CONFIG, TEAM_MEMBERS, STYLES } from '@/constants';
+import { useUser } from '@/lib/UserContext';
 
 export default function TasksPage() {
+  const { currentUser } = useUser();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -35,7 +37,7 @@ export default function TasksPage() {
     }
     setShowModal(false);
     setEditingId(null);
-    setForm({ title: '', description: '', priority: 'medium', status: 'todo', assignee: '', tags: '' });
+    setForm({ title: '', description: '', priority: 'medium', status: 'todo', assignee: currentUser || '', tags: '' });
   };
 
   const handleDelete = async (id: string) => {
@@ -89,7 +91,7 @@ export default function TasksPage() {
           <h1 className="text-xl font-bold">✅ 태스크</h1>
           <p className="text-sm text-text-muted mt-1">작업 진행 상황을 관리합니다</p>
         </div>
-        <button onClick={() => { setEditingId(null); setForm({ title: '', description: '', priority: 'medium', status: 'todo', assignee: '', tags: '' }); setShowModal(true); }}
+        <button onClick={() => { setEditingId(null); setForm({ title: '', description: '', priority: 'medium', status: 'todo', assignee: currentUser || '', tags: '' }); setShowModal(true); }}
           className={STYLES.btnPrimary}>
           + 새 태스크
         </button>

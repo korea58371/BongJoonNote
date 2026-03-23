@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NAV_ITEMS, TEAM_MEMBERS, MEMBER_COLORS } from '@/constants';
+import { useUser } from '@/lib/UserContext';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { currentUser, logout } = useUser();
 
   return (
     <>
@@ -65,14 +67,24 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         {/* Team */}
         <div className="p-4 border-t border-border">
           <h4 className="text-[11px] uppercase tracking-wider text-text-muted mb-3 font-semibold">팀 멤버</h4>
-          {TEAM_MEMBERS.map((name) => (
-            <div key={name} className="flex items-center gap-2.5 py-2 px-3 text-sm text-text-secondary">
-              <div className={`w-7 h-7 rounded-full ${MEMBER_COLORS[name] || 'bg-gray-500'} flex items-center justify-center text-xs font-bold text-white`}>
-                {name[0]}
+          {TEAM_MEMBERS.map((name) => {
+            const isMe = name === currentUser;
+            return (
+              <div key={name} className={`flex items-center justify-between py-2 px-3 text-sm rounded-lg transition-colors ${isMe ? 'bg-accent/10 border border-accent/20' : 'text-text-secondary'}`}>
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-7 h-7 rounded-full ${MEMBER_COLORS[name] || 'bg-gray-500'} flex items-center justify-center text-xs font-bold text-white`}>
+                    {name[0]}
+                  </div>
+                  <span className={isMe ? 'text-accent font-semibold' : ''}>{name}</span>
+                </div>
+                {isMe && (
+                  <button onClick={logout} className="text-xs text-text-muted hover:text-danger px-2 py-1 bg-bg-surface border border-border rounded transition-colors">
+                    로그아웃
+                  </button>
+                )}
               </div>
-              {name}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </aside>
     </>

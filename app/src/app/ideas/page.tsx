@@ -6,11 +6,13 @@ import type { Idea } from '@/types';
 import Modal from '@/components/Modal';
 import { IDEA_CATEGORIES, PRIORITY_CONFIG, IDEA_STATUS_CONFIG, STYLES } from '@/constants';
 import type { Priority, IdeaStatus } from '@/types';
+import { useUser } from '@/lib/UserContext';
 
 const PRIORITIES: Priority[] = ['high', 'medium', 'low'];
 const STATUSES: IdeaStatus[] = ['new', 'reviewing', 'approved', 'rejected'];
 
 export default function IdeasPage() {
+  const { currentUser } = useUser();
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('전체');
@@ -47,7 +49,7 @@ export default function IdeasPage() {
       const updated = await api.ideas.update(editingId, data);
       setIdeas(ideas.map(i => i.id === editingId ? updated : i));
     } else {
-      const created = await api.ideas.create(data);
+      const created = await api.ideas.create({ ...data, author: currentUser || undefined });
       setIdeas([...ideas, created]);
     }
     setShowModal(false);
@@ -68,6 +70,7 @@ export default function IdeasPage() {
     await api.rawDumps.create({
       content: rawDump,
       source: 'ideas',
+      author: currentUser || undefined,
     });
     
     setRawDump('');
@@ -150,7 +153,10 @@ export default function IdeasPage() {
               <div className="flex justify-between items-start mb-2.5">
                 <div className="flex items-center gap-2">
                   <div className={`w-2 h-2 rounded-sm ${PRIORITY_CONFIG[idea.priority].class}`} />
-                  <h3 className="text-sm font-semibold">{idea.title}</h3>
+                  <h3 className="text-sm font-semibold">
+                    {idea.title}
+                    {(idea as any).author && <span className="ml-2 text-[10px] text-accent font-normal">@{(idea as any).author}</span>}
+                  </h3>
                 </div>
                 <button onClick={(e) => { e.stopPropagation(); handleDelete(idea.id); }} className="text-text-muted hover:text-danger text-xs transition-colors">✕</button>
               </div>

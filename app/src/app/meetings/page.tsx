@@ -6,8 +6,10 @@ import type { Meeting } from '@/types';
 import Modal from '@/components/Modal';
 import ReactMarkdown from 'react-markdown';
 import { STYLES, TEAM_MEMBERS } from '@/constants';
+import { useUser } from '@/lib/UserContext';
 
 export default function MeetingsPage() {
+  const { currentUser } = useUser();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Meeting | null>(null);
@@ -70,6 +72,7 @@ export default function MeetingsPage() {
       decisions: form.decisions.split('\n').filter(Boolean),
       tags: form.tags.split(',').map(s => s.trim()).filter(Boolean),
       rawLog: form.rawLog,
+      author: currentUser || undefined,
     };
     const created = await api.meetings.create(data);
     setMeetings([...meetings, created]);
@@ -85,6 +88,7 @@ export default function MeetingsPage() {
     await api.rawDumps.create({
       content: rawDump,
       source: 'meetings',
+      author: currentUser || undefined,
     });
     
     setRawDump('');
@@ -281,7 +285,10 @@ export default function MeetingsPage() {
             {meetings.map((m) => (
               <div key={m.id} onClick={() => setSelected(m)} className="bg-bg-card border border-border rounded-2xl p-5 cursor-pointer transition-all hover:border-accent hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(99,102,241,0.1)]">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-base font-semibold">{m.title}</h3>
+                  <h3 className="text-base font-semibold">
+                    {m.title}
+                    {m.author && <span className="ml-2 text-[10px] text-accent font-normal">@{m.author}</span>}
+                  </h3>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-text-muted">{m.date}</span>
                     <button onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }} className="text-text-muted hover:text-danger text-xs transition-colors">✕</button>

@@ -52,7 +52,8 @@ CREATE TABLE IF NOT EXISTS raw_dumps (
   id TEXT PRIMARY KEY,
   content TEXT NOT NULL,
   source TEXT DEFAULT 'unknown',
-  created_at TIMESTAMPTZ DEFAULT now()
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
 );
 
 -- RLS (Row Level Security) — 공개 접근 허용 (2인 팀용)
