@@ -6,15 +6,9 @@ import LoginScreen from '@/components/LoginScreen';
 
 type UserName = typeof TEAM_MEMBERS[number];
 
-// 지정된 사용자와 초기 비밀번호
-const PASSWORDS: Record<UserName, string> = {
-  '김현준': '1111',
-  '봉정욱': '1111',
-};
-
 interface UserContextType {
   currentUser: UserName | null;
-  login: (name: UserName, pass: string) => boolean;
+  login: (name: UserName) => void;
   logout: () => void;
   isMounted: boolean;
 }
@@ -33,13 +27,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setIsMounted(true);
   }, []);
 
-  const login = (name: UserName, pass: string) => {
-    if (PASSWORDS[name] === pass) {
-      setCurrentUser(name);
-      localStorage.setItem('gamedevhub_user', name);
-      return true;
-    }
-    return false;
+  const login = (name: UserName) => {
+    setCurrentUser(name);
+    localStorage.setItem('gamedevhub_user', name);
   };
 
   const logout = () => {
