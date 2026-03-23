@@ -42,3 +42,10 @@ export interface Task {
 export type Priority = 'high' | 'medium' | 'low';
 export type IdeaStatus = 'new' | 'reviewing' | 'approved' | 'rejected';
 export type TaskStatus = 'todo' | 'in-progress' | 'done';
+
+export interface RawDump {
+  id: string;
+  content: string;
+  source: string;
+  createdAt: string;
+}

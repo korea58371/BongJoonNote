@@ -47,11 +47,21 @@ CREATE TABLE IF NOT EXISTS tasks (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- 수집함 (Raw Dumps)
+CREATE TABLE IF NOT EXISTS raw_dumps (
+  id TEXT PRIMARY KEY,
+  content TEXT NOT NULL,
+  source TEXT DEFAULT 'unknown',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
 -- RLS (Row Level Security) — 공개 접근 허용 (2인 팀용)
 ALTER TABLE meetings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ideas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE raw_dumps ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow all access to meetings" ON meetings FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all access to ideas" ON ideas FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all access to tasks" ON tasks FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all access to raw_dumps" ON raw_dumps FOR ALL USING (true) WITH CHECK (true);

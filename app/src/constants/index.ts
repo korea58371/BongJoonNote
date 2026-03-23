@@ -36,6 +36,7 @@ export const TASK_COLUMNS: { key: TaskStatus; label: string; icon: string; color
 // ===== 네비게이션 =====
 export const NAV_ITEMS = [
   { href: '/', icon: '📊', label: '대시보드' },
+  { href: '/inbox', icon: '📥', label: '수집함' },
   { href: '/meetings', icon: '📋', label: '회의록' },
   { href: '/ideas', icon: '💡', label: '아이디어' },
   { href: '/tasks', icon: '✅', label: '태스크' },

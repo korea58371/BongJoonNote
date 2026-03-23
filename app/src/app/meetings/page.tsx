@@ -80,23 +80,18 @@ export default function MeetingsPage() {
   const handleRawDump = async () => {
     if (!rawDump.trim()) return;
     setRawDumpSaving(true);
-    const lines = rawDump.trim().split('\n');
-    const autoTitle = lines[0].slice(0, 60) + (lines[0].length > 60 ? '...' : '');
-    const data = {
-      title: autoTitle,
-      date: new Date().toISOString().split('T')[0],
-      summary: '',
-      participants: [],
-      keyPoints: [],
-      decisions: [],
-      tags: ['미정리'],
-      rawLog: rawDump,
-    };
-    const created = await api.meetings.create(data);
-    setMeetings([created, ...meetings]);
+    
+    // 이제 회의록이 아닌 수집함(raw_dumps)으로 보냅니다.
+    await api.rawDumps.create({
+      content: rawDump,
+      source: 'meetings',
+    });
+    
     setRawDump('');
     setShowRawDump(false);
     setRawDumpSaving(false);
+    // 굳이 화면에 추가하지 않음 (수집함으로 이동했으므로)
+    alert('수집함에 저장되었습니다.');
   };
 
   const handleDelete = async (id: string) => {

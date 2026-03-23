@@ -63,21 +63,17 @@ export default function IdeasPage() {
   const handleRawDump = async () => {
     if (!rawDump.trim()) return;
     setRawDumpSaving(true);
-    const lines = rawDump.trim().split('\n');
-    const autoTitle = lines[0].slice(0, 60) + (lines[0].length > 60 ? '...' : '');
-    const data = {
-      title: autoTitle,
-      description: rawDump,
-      category: '미정리',
-      priority: 'medium' as Priority,
-      status: 'new' as IdeaStatus,
-      tags: ['미정리'],
-    };
-    const created = await api.ideas.create(data);
-    setIdeas([created, ...ideas]);
+    
+    // 이제 아이디어가 아닌 수집함(raw_dumps)으로 보냅니다.
+    await api.rawDumps.create({
+      content: rawDump,
+      source: 'ideas',
+    });
+    
     setRawDump('');
     setShowRawDump(false);
     setRawDumpSaving(false);
+    alert('수집함에 저장되었습니다.');
   };
 
   if (loading) return <div className="flex-1 flex items-center justify-center text-text-muted">로딩 중...</div>;

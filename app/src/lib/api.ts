@@ -1,7 +1,7 @@
-import type { Meeting, Idea, Task } from '@/types';
+import type { Meeting, Idea, Task, RawDump } from '@/types';
 
 // Re-export types for convenience
-export type { Meeting, Idea, Task } from '@/types';
+export type { Meeting, Idea, Task, RawDump } from '@/types';
 
 const API_BASE = '/api';
 
@@ -28,4 +28,19 @@ export const api = {
   meetings: createCrudClient<Meeting>('/meetings'),
   ideas: createCrudClient<Idea>('/ideas'),
   tasks: createCrudClient<Task>('/tasks'),
+  rawDumps: {
+    ...createCrudClient<RawDump>('/rawDumps'),
+    list: async () => {
+      const data = await request<RawDump[]>('/rawDumps');
+      // 개발 환경에서만 로컬 데이터 폴더로 동기화 (AI 활용 목적)
+      if (process.env.NODE_ENV === 'development') {
+        fetch('/api/sync-inbox', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        }).catch(e => console.error('Local inbox sync failed:', e));
+      }
+      return data;
+    }
+  }
 };
