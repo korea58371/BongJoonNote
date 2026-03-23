@@ -1,55 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readCollection, writeCollection, CollectionName } from '@/lib/data';
-import { isSupabaseConfigured } from '@/lib/supabase';
+import { getSupabase, isSupabaseConfigured } from '@/lib/supabase';
 
-const COLLECTIONS: CollectionName[] = ['meetings', 'ideas', 'tasks'];
+// ─── 헬퍼: camelCase ↔ snake_case ───────────────────────
+const COLUMN_MAP: Record<string, string> = {
+  keyPoints: 'key_points', rawLog: 'raw_log',
+  sourceMeeting: 'source_meeting', sourceIdea: 'source_idea',
+  createdAt: 'created_at', updatedAt: 'updated_at',
+};
+const REVERSE_MAP = Object.fromEntries(Object.entries(COLUMN_MAP).map(([k, v]) => [v, k]));
 
-// GET /api/sync — DB에서 전체 데이터를 JSON으로 Export
-export async function GET() {
+function toSnake(obj: Record<string, unknown>) {
+  const r: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) r[COLUMN_MAP[k] || k] = v;
+  return r;
+}
+function toCamel(obj: Record<string, unknown>) {
+  const r: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) r[REVERSE_MAP[k] || k] = v;
+  return r;
+}
+
+const COLLECTIONS = ['meetings', 'ideas', 'tasks'] as const;
+
+// ─── POST /api/sync/upload — 로컬 JSON → Supabase DB ───
+export async function POST(request: NextRequest) {
   try {
     if (!isSupabaseConfigured()) {
-      return NextResponse.json(
-        { error: 'Supabase가 설정되지 않았습니다. .env.local을 확인하세요.' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Supabase가 설정되지 않았습니다.' }, { status: 400 });
     }
 
-    const result: Record<string, unknown[]> = {};
+    const body = await request.json();
+    const db = getSupabase();
+    const results: Record<string, number> = {};
+
     for (const col of COLLECTIONS) {
-      result[col] = await readCollection(col);
+      const items = body[col];
+      if (!items || !Array.isArray(items) || items.length === 0) continue;
+
+      // upsert: id가 같으면 덮어쓰기, 없으면 삽입
+      const snakeItems = items.map((item: Record<string, unknown>) => toSnake(item));
+      const { error } = await db.from(col).upsert(snakeItems, { onConflict: 'id' });
+      if (error) throw new Error(`${col} upsert 실패: ${error.message}`);
+      results[col] = items.length;
     }
 
-    return NextResponse.json(result);
+    return NextResponse.json({ success: true, message: '업로드 완료', results });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
 }
 
-// POST /api/sync — JSON 데이터를 DB에 Import (전체 교체)
-export async function POST(request: NextRequest) {
+// ─── GET /api/sync/upload — Supabase DB → JSON 다운로드 ───
+export async function GET() {
   try {
     if (!isSupabaseConfigured()) {
-      return NextResponse.json(
-        { error: 'Supabase가 설정되지 않았습니다. .env.local을 확인하세요.' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Supabase가 설정되지 않았습니다.' }, { status: 400 });
     }
 
-    const body = await request.json();
-    const imported: Record<string, number> = {};
+    const db = getSupabase();
+    const result: Record<string, unknown[]> = {};
 
     for (const col of COLLECTIONS) {
-      if (body[col] && Array.isArray(body[col])) {
-        await writeCollection(col, body[col]);
-        imported[col] = body[col].length;
-      }
+      const { data, error } = await db.from(col).select('*').order('created_at', { ascending: false });
+      if (error) throw new Error(`${col} 조회 실패: ${error.message}`);
+      result[col] = (data || []).map((row: Record<string, unknown>) => toCamel(row));
     }
 
-    return NextResponse.json({
-      success: true,
-      message: '동기화 완료',
-      imported,
-    });
+    return NextResponse.json(result);
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
