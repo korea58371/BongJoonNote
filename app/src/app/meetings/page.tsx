@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { api, Meeting } from '@/lib/api';
+import { api } from '@/lib/api';
+import type { Meeting } from '@/types';
 import Modal from '@/components/Modal';
 import ReactMarkdown from 'react-markdown';
+import { STYLES, TEAM_MEMBERS } from '@/constants';
 
 export default function MeetingsPage() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
@@ -79,12 +81,12 @@ export default function MeetingsPage() {
   if (loading) return <div className="flex-1 flex items-center justify-center text-text-muted">로딩 중...</div>;
 
   // Markdown prose styles
-  const proseClass = "prose-sm prose-invert max-w-none prose-p:text-text-secondary prose-p:leading-relaxed prose-headings:text-text-primary prose-strong:text-text-primary prose-li:text-text-secondary prose-a:text-accent-hover prose-code:bg-bg-hover prose-code:px-1 prose-code:rounded prose-code:text-xs prose-pre:bg-bg-input prose-pre:border prose-pre:border-border prose-pre:rounded-xl prose-ul:list-disc prose-ol:list-decimal";
+  const proseClass = STYLES.prose;
 
-  // Reusable textarea
-  const inputClass = "w-full px-3.5 py-2.5 bg-bg-input border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(99,102,241,0.3)] transition-all";
-  const textareaClass = `${inputClass} min-h-[100px] resize-y font-mono text-xs leading-relaxed`;
-  const labelClass = "block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5";
+  // Reuse shared styles
+  const inputClass = STYLES.input;
+  const textareaClass = STYLES.textarea;
+  const labelClass = STYLES.label;
 
   return (
     <>

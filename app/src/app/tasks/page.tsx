@@ -1,29 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { api, Task } from '@/lib/api';
+import { api } from '@/lib/api';
+import type { Task } from '@/types';
+import type { Priority } from '@/types';
 import Modal from '@/components/Modal';
-
-const COLUMNS: { key: Task['status']; label: string; icon: string; color: string }[] = [
-  { key: 'todo', label: '할 일', icon: '📌', color: 'border-t-text-muted' },
-  { key: 'in-progress', label: '진행 중', icon: '🔥', color: 'border-t-accent' },
-  { key: 'done', label: '완료', icon: '✅', color: 'border-t-success' },
-];
-
-const priorityConfig = {
-  high: { label: '높음', class: 'bg-danger' },
-  medium: { label: '중간', class: 'bg-warning' },
-  low: { label: '낮음', class: 'bg-text-muted' },
-};
-
-const MEMBERS = ['봉정욱', '김현준'];
+import { TASK_COLUMNS, PRIORITY_CONFIG, TEAM_MEMBERS, STYLES } from '@/constants';
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<{ title: string; description: string; priority: 'high' | 'medium' | 'low'; status: Task['status']; assignee: string; tags: string }>({ title: '', description: '', priority: 'medium', status: 'todo', assignee: '', tags: '' });
+  const [form, setForm] = useState<{ title: string; description: string; priority: Priority; status: Task['status']; assignee: string; tags: string }>({ title: '', description: '', priority: 'medium', status: 'todo', assignee: '', tags: '' });
 
   useEffect(() => {
     api.tasks.list().then(setTasks).finally(() => setLoading(false));
@@ -95,20 +84,20 @@ export default function TasksPage() {
 
   return (
     <>
-      <div className="px-4 lg:px-8 py-4 lg:py-5 border-b border-border bg-bg-surface flex flex-wrap gap-3 justify-between items-center">
+      <div className={STYLES.pageHeader}>
         <div>
           <h1 className="text-xl font-bold">✅ 태스크</h1>
           <p className="text-sm text-text-muted mt-1">작업 진행 상황을 관리합니다</p>
         </div>
         <button onClick={() => { setEditingId(null); setForm({ title: '', description: '', priority: 'medium', status: 'todo', assignee: '', tags: '' }); setShowModal(true); }}
-          className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]">
+          className={STYLES.btnPrimary}>
           + 새 태스크
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 lg:px-8 py-4 lg:py-6">
+      <div className={STYLES.pageContent}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0 lg:min-h-[400px]">
-          {COLUMNS.map(col => {
+          {TASK_COLUMNS.map(col => {
             const columnTasks = tasks.filter(t => t.status === col.key);
             return (
               <div key={col.key}
@@ -133,7 +122,7 @@ export default function TasksPage() {
                       onClick={() => openEdit(task)}
                       className={`bg-bg-card border border-border rounded-xl p-3.5 cursor-grab active:cursor-grabbing transition-all hover:border-border-light hover:-translate-y-0.5 ${draggedId === task.id ? 'opacity-40 scale-95' : ''}`}>
                       <div className="flex items-start gap-2 mb-2">
-                        <div className={`w-2 h-2 rounded-sm mt-1.5 flex-shrink-0 ${priorityConfig[task.priority].class}`} />
+                        <div className={`w-2 h-2 rounded-sm mt-1.5 flex-shrink-0 ${PRIORITY_CONFIG[task.priority].class}`} />
                         <h4 className="text-sm font-medium flex-1">{task.title}</h4>
                         <button onClick={(e) => { e.stopPropagation(); handleDelete(task.id); }} className="text-text-muted hover:text-danger text-xs transition-colors">✕</button>
                       </div>
@@ -154,7 +143,7 @@ export default function TasksPage() {
                       </div>
                       {/* Quick status move buttons — mobile only */}
                       <div className="flex gap-1 mt-2.5 pt-2.5 border-t border-border lg:hidden">
-                        {COLUMNS.filter(c => c.key !== task.status).map(c => (
+                        {TASK_COLUMNS.filter(c => c.key !== task.status).map(c => (
                           <button key={c.key} onClick={(e) => { e.stopPropagation(); handleStatusChange(task, c.key); }}
                             className="flex-1 text-[10px] text-text-muted hover:text-text-primary bg-bg-hover hover:bg-bg-elevated py-1 rounded transition-all">
                             → {c.label}
@@ -173,46 +162,46 @@ export default function TasksPage() {
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editingId ? '태스크 수정' : '새 태스크'}
         footer={
           <>
-            <button onClick={() => setShowModal(false)} className="px-4 py-2 bg-bg-elevated text-text-secondary border border-border-light rounded-lg text-sm hover:bg-bg-hover transition-all">취소</button>
-            <button onClick={handleSave} className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition-all">저장</button>
+            <button onClick={() => setShowModal(false)} className={STYLES.btnSecondary}>취소</button>
+            <button onClick={handleSave} className={STYLES.btnPrimary}>저장</button>
           </>
         }
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">제목</label>
-            <input value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full px-3.5 py-2.5 bg-bg-input border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-accent transition-all" />
+            <label className={STYLES.label}>제목</label>
+            <input value={form.title} onChange={e => setForm({...form, title: e.target.value})} className={STYLES.input} />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">설명</label>
-            <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} className="w-full px-3.5 py-2.5 bg-bg-input border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-accent transition-all min-h-[80px] resize-y" />
+            <label className={STYLES.label}>설명</label>
+            <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} className={`${STYLES.input} min-h-[80px] resize-y`} />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">우선도</label>
-              <select value={form.priority} onChange={e => setForm({...form, priority: e.target.value as typeof form.priority})} className="w-full px-3.5 py-2.5 bg-bg-input border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-accent transition-all">
+              <label className={STYLES.label}>우선도</label>
+              <select value={form.priority} onChange={e => setForm({...form, priority: e.target.value as Priority})} className={STYLES.input}>
                 <option value="high">높음</option>
                 <option value="medium">중간</option>
                 <option value="low">낮음</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">상태</label>
-              <select value={form.status} onChange={e => setForm({...form, status: e.target.value as Task['status']})} className="w-full px-3.5 py-2.5 bg-bg-input border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-accent transition-all">
-                {COLUMNS.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}
+              <label className={STYLES.label}>상태</label>
+              <select value={form.status} onChange={e => setForm({...form, status: e.target.value as Task['status']})} className={STYLES.input}>
+                {TASK_COLUMNS.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">담당자</label>
-              <select value={form.assignee} onChange={e => setForm({...form, assignee: e.target.value})} className="w-full px-3.5 py-2.5 bg-bg-input border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-accent transition-all">
+              <label className={STYLES.label}>담당자</label>
+              <select value={form.assignee} onChange={e => setForm({...form, assignee: e.target.value})} className={STYLES.input}>
                 <option value="">미지정</option>
-                {MEMBERS.map(m => <option key={m} value={m}>{m}</option>)}
+                {TEAM_MEMBERS.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">태그 (쉼표 구분)</label>
-            <input value={form.tags} onChange={e => setForm({...form, tags: e.target.value})} className="w-full px-3.5 py-2.5 bg-bg-input border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-accent transition-all" />
+            <label className={STYLES.label}>태그 (쉼표 구분)</label>
+            <input value={form.tags} onChange={e => setForm({...form, tags: e.target.value})} className={STYLES.input} />
           </div>
         </div>
       </Modal>
