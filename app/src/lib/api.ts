@@ -17,7 +17,14 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 
 function createCrudClient<T extends { id: string }>(path: string) {
   return {
-    list: () => request<T[]>(path),
+    list: async () => {
+      const data = await request<T[]>(path);
+      // 개발 환경에서만 로컬 데이터 폴더와 양방향 동기화 (작업유실 방지 + AI 연동)
+      if (process.env.NODE_ENV === 'development') {
+        fetch('/api/sync/two-way', { method: 'POST' }).catch(e => console.error('2-way sync failed:', e));
+      }
+      return data;
+    },
     create: (data: Partial<T>) => request<T>(path, { method: 'POST', body: JSON.stringify(data) }),
     update: (id: string, data: Partial<T>) => request<T>(`${path}/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id: string) => request<void>(`${path}/${id}`, { method: 'DELETE' }),
@@ -28,19 +35,5 @@ export const api = {
   meetings: createCrudClient<Meeting>('/meetings'),
   ideas: createCrudClient<Idea>('/ideas'),
   tasks: createCrudClient<Task>('/tasks'),
-  rawDumps: {
-    ...createCrudClient<RawDump>('/rawDumps'),
-    list: async () => {
-      const data = await request<RawDump[]>('/rawDumps');
-      // 개발 환경에서만 로컬 데이터 폴더로 동기화 (AI 활용 목적)
-      if (process.env.NODE_ENV === 'development') {
-        fetch('/api/sync-inbox', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        }).catch(e => console.error('Local inbox sync failed:', e));
-      }
-      return data;
-    }
-  }
+  rawDumps: createCrudClient<RawDump>('/rawDumps'),
 };
