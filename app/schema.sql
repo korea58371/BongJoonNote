@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS ideas (
   description TEXT DEFAULT '',
   category TEXT DEFAULT '',
   priority TEXT DEFAULT 'medium' CHECK (priority IN ('high', 'medium', 'low')),
-  status TEXT DEFAULT 'new' CHECK (status IN ('new', 'reviewing', 'approved', 'rejected')),
+  status TEXT DEFAULT 'new' CHECK (status IN ('new', 'reviewing', 'approved', 'rejected', 'archived')),
   source_meeting TEXT,
   tags JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ DEFAULT now(),
@@ -52,6 +52,19 @@ CREATE TABLE IF NOT EXISTS raw_dumps (
   id TEXT PRIMARY KEY,
   content TEXT NOT NULL,
   source TEXT DEFAULT 'unknown',
+  author TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- 기획서 (Specs)
+CREATE TABLE IF NOT EXISTS specs (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL DEFAULT '',
+  content TEXT DEFAULT '',
+  source_idea TEXT,
+  author TEXT,
+  tags JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -61,8 +74,19 @@ ALTER TABLE meetings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ideas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE raw_dumps ENABLE ROW LEVEL SECURITY;
+ALTER TABLE specs ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow all access to meetings" ON meetings;
 CREATE POLICY "Allow all access to meetings" ON meetings FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow all access to ideas" ON ideas;
 CREATE POLICY "Allow all access to ideas" ON ideas FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow all access to tasks" ON tasks;
 CREATE POLICY "Allow all access to tasks" ON tasks FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow all access to raw_dumps" ON raw_dumps;
 CREATE POLICY "Allow all access to raw_dumps" ON raw_dumps FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow all access to specs" ON specs;
+CREATE POLICY "Allow all access to specs" ON specs FOR ALL USING (true) WITH CHECK (true);

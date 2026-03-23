@@ -1,7 +1,7 @@
 import { isSupabaseConfigured, getSupabase } from './supabase';
 
 // --- Type ---
-export type CollectionName = 'meetings' | 'ideas' | 'tasks' | 'raw_dumps';
+export type CollectionName = 'meetings' | 'ideas' | 'tasks' | 'raw_dumps' | 'specs';
 
 // --- ID Generator ---
 export function generateId(): string {

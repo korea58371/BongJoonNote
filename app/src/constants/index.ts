@@ -24,6 +24,7 @@ export const IDEA_STATUS_CONFIG: Record<IdeaStatus, { label: string; class: stri
   reviewing: { label: '검토중', class: 'bg-amber-500/15 text-warning' },
   approved: { label: '승인', class: 'bg-emerald-500/15 text-success' },
   rejected: { label: '반려', class: 'bg-rose-500/15 text-danger' },
+  archived: { label: '보관됨', class: 'bg-bg-elevated text-text-muted border border-border' },
 };
 
 // ===== 태스크 상태 =====
@@ -39,6 +40,7 @@ export const NAV_ITEMS = [
   { href: '/inbox', icon: '📥', label: '수집함' },
   { href: '/meetings', icon: '📋', label: '회의록' },
   { href: '/ideas', icon: '💡', label: '아이디어' },
+  { href: '/specs', icon: '📝', label: '기획서' },
   { href: '/tasks', icon: '✅', label: '태스크' },
 ] as const;
 

@@ -41,8 +41,19 @@ export interface Task {
   updatedAt: string;
 }
 
+export interface Spec {
+  id: string;
+  title: string;
+  content: string;
+  sourceIdea: string | null;
+  tags: string[];
+  author?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type Priority = 'high' | 'medium' | 'low';
-export type IdeaStatus = 'new' | 'reviewing' | 'approved' | 'rejected';
+export type IdeaStatus = 'new' | 'reviewing' | 'approved' | 'rejected' | 'archived';
 export type TaskStatus = 'todo' | 'in-progress' | 'done';
 
 export interface RawDump {

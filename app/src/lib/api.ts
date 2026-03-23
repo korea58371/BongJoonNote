@@ -1,7 +1,7 @@
-import type { Meeting, Idea, Task, RawDump } from '@/types';
+import type { Meeting, Idea, Task, RawDump, Spec } from '@/types';
 
 // Re-export types for convenience
-export type { Meeting, Idea, Task, RawDump } from '@/types';
+export type { Meeting, Idea, Task, RawDump, Spec } from '@/types';
 
 const API_BASE = '/api';
 
@@ -34,6 +34,7 @@ function createCrudClient<T extends { id: string }>(path: string) {
 export const api = {
   meetings: createCrudClient<Meeting>('/meetings'),
   ideas: createCrudClient<Idea>('/ideas'),
+  specs: createCrudClient<Spec>('/specs'),
   tasks: createCrudClient<Task>('/tasks'),
   rawDumps: createCrudClient<RawDump>('/rawDumps'),
 };

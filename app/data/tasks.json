@@ -1,6 +1,23 @@
 {
   "tasks": [
     {
+      "id": "t4",
+      "title": "웹 기반 대규모 전쟁 SRPG 프로토타입 뼈대 개발",
+      "description": "PixiJS(또는 React+DOM/Canvas)를 사용하여 위에서 내려다보는 2D 탑다운 형식의 정사각형(Square) 2D 배열 그리드 전투 프로토타입을 Vibe Coding으로 작성. 랑그릿사풍의 극단적 상성과 지형 보너스 적용.",
+      "status": "todo",
+      "priority": "high",
+      "assignee": null,
+      "sourceIdea": "mn3c5d4k6k39",
+      "sourceMeeting": null,
+      "tags": [
+        "개발",
+        "프로토타입",
+        "VibeCoding"
+      ],
+      "createdAt": "2026-03-24T00:30:00+00:00",
+      "updatedAt": "2026-03-24T00:30:00+00:00"
+    },
+    {
       "id": "t1",
       "title": "세계관 국가/종족 설정 문서화",
       "description": "각 국가와 종족의 특성, 관계, 역사 등을 정리",

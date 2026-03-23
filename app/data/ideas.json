@@ -1,9 +1,138 @@
 {
   "ideas": [
     {
+      "id": "i6_2d_vs_block",
+      "title": "그래픽 컨셉: 2D 타일맵 vs 3D 블록맵",
+      "description": "이미지 AI(Midjourney 등)의 고퀄리티 일러스트 화풍을 100% 활용하기 위해 **2D 탑다운 타일맵** 채택. 마인크래프트 형식(Voxel 3D)은 고저차 표현엔 좋으나 AI 이미지 생성과의 호환성이 떨어지므로 보류.",
+      "category": "아트/에셋",
+      "priority": "high",
+      "status": "approved",
+      "sourceMeeting": null,
+      "tags": [
+        "그래픽",
+        "2D",
+        "타일맵"
+      ],
+      "createdAt": "2026-03-23T18:54:00+00:00",
+      "updatedAt": "2026-03-23T18:54:00+00:00"
+    },
+    {
+      "id": "i7_web_rendering",
+      "title": "대규모 전장 렌더링 및 연출 최적화",
+      "description": "수백 개의 맵 타일과 100개 이상의 유닛을 DOM(HTML 태그)으로 렌더링 시 심각한 성능 폭락 발생. 이를 방지하기 위해 반드시 **WebGL(Canvas) 기반 엔진(PixiJS 또는 Phaser)** 채택.\n- **Y-Sorting**: 화면을 밑에서 위로 덮어 그려 절벽 뒤 공간 및 겹침 문제를 자연스럽게 해결.\n- **이펙트 처리**: 그림자, 구름 등은 최상단 반투명 PNG 오버레이로, 야간/조명 효과는 Blend Mode 마스킹으로 구현.",
+      "category": "기술/개발",
+      "priority": "high",
+      "status": "approved",
+      "sourceMeeting": null,
+      "tags": [
+        "최적화",
+        "WebGL",
+        "PixiJS",
+        "렌더링"
+      ],
+      "createdAt": "2026-03-23T18:54:00+00:00",
+      "updatedAt": "2026-03-23T18:54:00+00:00"
+    },
+    {
+      "id": "i8_tile_seamless_hack",
+      "title": "AI 생성 한계 극복: 오프셋/알파 마스크 자동화 시스템",
+      "description": "AI(Midjourney 등)가 47개의 완벽히 정밀한 경계선(곡선, 대각선) 타일을 개별적으로 그리지 못하는 치명적 한계를 프로그래밍으로 극복.\n1. 이미지 AI로는 **'사방이 완벽하게 이어지는(Seamless)' 단일 원본 텍스처(잔디, 흙) 딱 2장**만 생성.\n2. 코딩 스크립트 작성(오프셋 기법 응용): 프로그래밍을 통해 테두리에 브러시 투명도(Alpha)를 깎아 마스킹을 씌워 47개 버전의 경계선(곡선, 대각선 등) 타일을 자동 합성하는 자동화 파이프라인 구축.",
+      "category": "기술",
+      "priority": "high",
+      "status": "approved",
+      "sourceMeeting": null,
+      "tags": [
+        "AI에셋",
+        "파이프라인",
+        "오토타일"
+      ],
+      "createdAt": "2026-03-23T18:54:00+00:00",
+      "updatedAt": "2026-03-23T18:54:00+00:00"
+    },
+    {
+      "id": "mn3caorlhon7i68_1",
+      "title": "비트마스킹 기반 오토타일 시스템",
+      "description": "이미지 AI가 만들기 어려운 완벽한 타일 연결을 코드 알고리즘으로 해결. 타일 인접 상태에 따라 자동으로 이미지가 변하는 8-bit 오토타일링 적용. 단순한 바닥 타일 위에 고해상도 장식(프랍)을 레이어링하여 시각적 퀄리티를 극대화함.",
+      "category": "기술",
+      "priority": "high",
+      "status": "new",
+      "sourceMeeting": null,
+      "tags": [
+        "맵",
+        "오토타일",
+        "그래픽"
+      ],
+      "createdAt": "2026-03-23T15:42:00+00:00",
+      "updatedAt": "2026-03-23T15:42:00+00:00"
+    },
+    {
+      "id": "mn3caorlhon7i68_2",
+      "title": "절차적 맵 제너레이터 (Procedural Map Generator)",
+      "description": "단순 LLM 의존에서 벗어나 수학적 알고리즘으로 레벨 디자인 자동화.\n1. 펄린 노이즈(Perlin Noise): 덩어리진 지형(바다, 해변, 절벽)의 높낮이 배치\n2. 파동 함수 붕괴(WFC) 및 A* 패스파인딩: 길(Path)이 쌩뚱맞게 끊기지 않고 마을과 성을 잇는 논리적 루트 생성",
+      "category": "기술",
+      "priority": "high",
+      "status": "new",
+      "sourceMeeting": null,
+      "tags": [
+        "맵생성",
+        "알고리즘",
+        "절차적"
+      ],
+      "createdAt": "2026-03-23T15:42:00+00:00",
+      "updatedAt": "2026-03-23T15:42:00+00:00"
+    },
+    {
+      "id": "mn3c5d4k6k39",
+      "title": "웹 기반 Vibe Coding 최적화 개발 환경",
+      "description": "Godot 대신 100% 텍스트 기반인 Web(TypeScript + React/Canvas 혹은 PixiJS) 환경 채택. AI에게 코딩을 일임하기에 가장 완벽한 생태계.",
+      "category": "기술/개발",
+      "priority": "high",
+      "status": "approved",
+      "sourceMeeting": null,
+      "tags": [
+        "엔진",
+        "Web",
+        "VibeCoding"
+      ],
+      "createdAt": "2026-03-23T15:23:28.147695+00:00",
+      "updatedAt": "2026-03-23T15:23:28.147695+00:00"
+    },
+    {
+      "id": "mn3c5d4ko6ah",
+      "title": "랑그릿사 스타일 군단/부대 전투 시스템",
+      "description": "정사각형 맵의 포위 전술 한계를 극복하기 위해 캐릭터 단일이 아닌 **군단/부대 중심** 시스템 채택.\n- 보병>창병>기병 등 명확한 가위바위보 상성\n- 숲, 성벽 등 지형 방어력 보너스 극대화\n- 지휘관의 오라(Aura) 룰 적용",
+      "category": "시스템/전투",
+      "priority": "high",
+      "status": "approved",
+      "sourceMeeting": null,
+      "tags": [
+        "전투",
+        "상성",
+        "지형"
+      ],
+      "createdAt": "2026-03-23T15:23:28.147695+00:00",
+      "updatedAt": "2026-03-23T15:23:28.147695+00:00"
+    },
+    {
+      "id": "mn3c5d4k34tu",
+      "title": "AI 생성 특화 리소스 파이프라인 (토큰형)",
+      "description": "Midjourney 등 보편적 AI 생성기가 뿜어내기 좋은 레이아웃 활용:\n- 배경: 위에서 내려다보는 정사각형 심리스(Seamless) 텍스처 타일 조립\n- 유닛: 걷는 도트 애니메이션 대신 체스말 형식의 고퀄리티 **보드게임 토큰** 디자인을 채택하여 작업량 절감 및 밀도 상승.",
+      "category": "아트/에셋",
+      "priority": "medium",
+      "status": "approved",
+      "sourceMeeting": null,
+      "tags": [
+        "에셋",
+        "디자인",
+        "토큰"
+      ],
+      "createdAt": "2026-03-23T15:23:28.147695+00:00",
+      "updatedAt": "2026-03-23T15:23:28.147695+00:00"
+    },
+    {
       "id": "i1",
       "title": "세력 지도 시스템",
-      "description": "삼국지 11처럼 판타지 대륙 전체를 타일맵으로 구현. 각 지역의 지형(용암협곡, 죽음의 땅 등)이 전투에 영향을 줌.\n\n**[2026-03-23 추가 논의 - 플레이 방식]**\n- 기존 대세력에 소속되어 플레이하거나, 나만의 소규모 세력을 창설해 삼국지 형태의 자유도 높은 전쟁이 가능하도록 루트를 이원화합니다.",
+      "description": "삼국지 11처럼 판타지 대륙 전체를 타일맵으로 구현. 각 지역의 지형(용암협곡, 죽음의 땅 등)이 전투에 영향을 줌.\n\n**[2026-03-23 추가 논의 - 플레이 방식]**\n- 기존 대세력에 소속되어 플레이하거나, 나만의 소규모 세력을 창설해 삼국지 형태의 자유도 높은 전쟁이 가능하도록 루트를 이원화합니다.\n\n**[2026-03-24 추가 논의 - 맵/그리드 방식]**\n- Vibe Coding(AI 개발) 최적화 및 텍스처 조합의 용이성, 난전 가독성을 위해 **정사각형(Square Grid)**을 최종 채택했습니다. (육각형, 쿼터뷰 배제)",
       "category": "게임시스템",
       "priority": "high",
       "status": "approved",
